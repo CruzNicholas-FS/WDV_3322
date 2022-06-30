@@ -1,0 +1,36 @@
+{
+  "name": "wdv_3322_modularization",
+  "version": "1.0.0",
+  "description": "Structure of backend API",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --coverage",
+    "start": "nodemon server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CruzNicholas-FS/WDV_3322_Modularization-.git"
+  },
+  "keywords": [
+    "Modularization",
+    "API",
+    "NodeJS"
+  ],
+  "author": "Nicholas Cruz",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/CruzNicholas-FS/WDV_3322_Modularization-/issues"
+  },
+  "homepage": "https://github.com/CruzNicholas-FS/WDV_3322_Modularization-#readme",
+  "devDependencies": {
+    "jest": "^28.1.2",
+    "nodemon": "^2.0.18",
+    "supertest": "^6.2.3"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.1",
+    "express": "^4.18.1",
+    "mongoose": "^6.4.1"
+  }
+}
