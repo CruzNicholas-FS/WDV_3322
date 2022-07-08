@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const mongoose=require("mongoose");
+const bcrypt=require("bcrypt");
 const {findUser, saveUser}=require("../../db/db");
 const User = require("../models/user");
 
@@ -12,32 +13,38 @@ router.post("/signup", (req, res)=>{
                 message:"User already registered",
                 metadata:{
                     method:req.method,
-                    path:req.path
+                    path:req.path,
+                    email:result.email
                 }
             })
         } else{
-            const newUser = new User({
-                _id:mongoose.Types.ObjectId(),
-                firstName:req.body.firstName,
-                lastName:req.body.lastName,
-                streetAddress:req.body.streetAddress,
-                city:req.body.city,
-                state:req.body.state,
-                zip:req.body.zip,
-                email:req.body.email,
-                password:req.body.password
-            })
-            saveUser(newUser)
-            .then(result=>{
-                return res.status(200).json({
+            bcrypt.hash(req.body.password, 10, (err, hash)=>{
+                if (err) {
+                    res.status(500).json({message:err.message})
+                } else{
+                    const newUser = new User({
+                        _id:mongoose.Types.ObjectId(),
+                        firstName:req.body.firstName,
+                        lastName:req.body.lastName,
+                        streetAddress:req.body.streetAddress,
+                        city:req.body.city,
+                        state:req.body.state,
+                        zip:req.body.zip,
+                        email:req.body.email,
+                        password:hash
+                    })
+                    saveUser(newUser)
+                    .then(result=>{
+                    return res.status(200).json({
                     message:"User registered successfully",
                     metadata:{
                         method:req.method,
                         path:req.path,
-                        firstName:result.firstName,
-                        email:result.email
+                        user:newUser
                     }
                 })
+            })
+                }
             })
         }
     })
@@ -52,21 +59,25 @@ router.post("/signup", (req, res)=>{
 });
 
 router.post("/login", (req,res)=>{
-    findUser({email:req.body.email, password:req.body.password})
-    .then(result=>{
-        if (result.length>0) {
-            return res.status(200).json({
-                message:"Successful login",
-                metadata:{
-                    method:req.method,
-                    path:req.path,
-                    firstName:result[0].firstName,
-                    email:result[0].email
+    findUser({email:req.body.email})
+    .then(response=>{
+        if (response.length>0) {
+            bcrypt.compare(req.body.password, req.body.hash, (err, result)=>{
+                if (err) return res.status(501).json({error:err.message})
+                if (result) {
+                    res.status(200).json({
+                        message:"Login successful",
+                        result:result,
+                        firstName:response[0].firstName,
+                        lastName:response[0].lastName
+                    })
+                } else{
+                    res.status(401).json({message:"Password incorrect, try again"})
                 }
             })
         } else{
             return res.status(406).json({
-                message:"Email or password is incorrect, try again",
+                message:"Email is incorrect, try again",
                 metadata:{
                     method:req.method,
                     path:req.path,
