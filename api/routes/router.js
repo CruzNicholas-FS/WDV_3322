@@ -2,8 +2,10 @@ const express = require("express");
 const router = express.Router();
 const mongoose=require("mongoose");
 const bcrypt=require("bcrypt");
+const jwt = require("jsonwebtoken");
 const {findUser, saveUser}=require("../../db/db");
 const User = require("../models/user");
+const checkAuth = require("../../auth/checkAuth");
 
 router.post("/signup", (req, res)=>{
     findUser({email:req.body.email})
@@ -62,14 +64,14 @@ router.post("/login", (req,res)=>{
     findUser({email:req.body.email})
     .then(response=>{
         if (response.length>0) {
-            bcrypt.compare(req.body.password, req.body.hash, (err, result)=>{
+            bcrypt.compare(req.body.password, response[0].password, (err, result)=>{
                 if (err) return res.status(501).json({error:err.message})
                 if (result) {
+                    const token = jwt.sign({email:response[0].email, id:response[0].id}, process.env.key)
                     res.status(200).json({
-                        message:"Login successful",
-                        result:result,
-                        firstName:response[0].firstName,
-                        lastName:response[0].lastName
+                        message:"Secured",
+                        token:token,
+                        welcome:`Welcome ${response[0].firstName}`
                     })
                 } else{
                     res.status(401).json({message:"Password incorrect, try again"})
@@ -96,39 +98,8 @@ router.post("/login", (req,res)=>{
     })
 })
 
-router.get("/profile", (req, res)=>{
-    findUser({email:req.body.email})
-    .then(result=>{
-        if (result.length>0) {
-            return res.status(200).json({
-                message:"Profile found",
-                metadata:{
-                    method:req.method,
-                    path:req.path,
-                    firstName:result[0].firstName,
-                    lastName:result[0].lastName,
-                    email:result[0].email
-                }
-            })
-        } else{
-            return res.status(406).json({
-                message:"Profile not found, try again",
-                metadata:{
-                    method:req.method,
-                    path:req.path,
-                    email:req.body.email,
-                }
-            })
-        }
-    })
-    .catch(err=>{
-        console.error(err.message);
-        res.status(500).json({
-            error:{
-                message:err.message
-            }
-        })
-    })
+router.get("/profile", checkAuth, (req, res, next)=>{
+    res.status(200).json({message:req.userData})
 })
 
 module.exports=router;
