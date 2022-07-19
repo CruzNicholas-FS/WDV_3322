@@ -28,7 +28,7 @@ router.post("/signup", (req, res)=>{
                         _id:mongoose.Types.ObjectId(),
                         firstName:req.body.firstName,
                         lastName:req.body.lastName,
-                        streetAddress:req.body.streetAddress,
+                        address:req.body.address,
                         city:req.body.city,
                         state:req.body.state,
                         zip:req.body.zip,
@@ -42,7 +42,16 @@ router.post("/signup", (req, res)=>{
                     metadata:{
                         method:req.method,
                         path:req.path,
-                        user:newUser
+                        user:{
+                        firstName:result.firstName,
+                        lastName:result.lastName,
+                        address:result.address,
+                        city:result.city,
+                        state:result.state,
+                        zip:result.zip,
+                        email:result.email,
+                        password:req.body.password
+                        }
                     }
                 })
             })
@@ -67,7 +76,7 @@ router.post("/login", (req,res)=>{
             bcrypt.compare(req.body.password, response[0].password, (err, result)=>{
                 if (err) return res.status(501).json({error:err.message})
                 if (result) {
-                    const token = jwt.sign({email:response[0].email, id:response[0].id}, process.env.key)
+                    const token = jwt.sign({email:response[0].email, firstName:response[0].firstName, lastName:response[0].lastName}, process.env.key)
                     res.status(200).json({
                         message:"Secured",
                         token:token,
