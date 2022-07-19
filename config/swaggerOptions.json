@@ -1,0 +1,166 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Node JS Profile API",
+        "version": "1.0.0",
+        "description": "A user API with JWT security"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:3001/users"
+        }
+    ],
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
+        }
+    },
+    "security": [
+        {
+            "bearerAuth": []
+        }
+    ],
+    "paths": {
+        "/signup": {
+            "post": {
+                "tags": [
+                    "Signup"
+                ],
+                "summary": "User signup",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "firstName": {
+                                        "type": "string",
+                                        "default": "Nicholas"
+                                    },
+                                    "lastName": {
+                                        "type": "string",
+                                        "default": "Cruz"
+                                    },
+                                    "address": {
+                                        "type": "string",
+                                        "default": "19 Dream Blvd"
+                                    },
+                                    "city": {
+                                        "type": "string",
+                                        "default": "Dream City"
+                                    },
+                                    "state": {
+                                        "type": "string",
+                                        "default": "State"
+                                    },
+                                    "zip": {
+                                        "type": "number",
+                                        "default": 10101
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "default": "necolanch@gmail.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "default": "terriblepassword"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "201": {
+                        "description": "Success"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "500": {
+                        "description": "Unable to signup"
+                    },
+                    "501": {
+                        "description": "Unable to signup"
+                    }
+                }
+            }
+        },
+        "/login": {
+            "post": {
+                "tags": [
+                    "Login"
+                ],
+                "summary": "User login",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "default": "necolanch@gmail.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "default": "terriblepassword"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "201": {
+                        "description": "Success"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "500": {
+                        "description": "Unable to login"
+                    },
+                    "501": {
+                        "description": "Unable to login"
+                    }
+                }
+            }
+        },
+        "/profile": {
+            "get": {
+                "tags": [
+                    "Get Profile"
+                ],
+                "summary": "Get a profile",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "201": {
+                        "description": "Success"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "500": {
+                        "description": "Unable to find profile"
+                    },
+                    "501": {
+                        "description": "Unable to find profile"
+                    }
+                }
+            }
+        }
+    }
+}
